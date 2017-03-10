@@ -1,8 +1,11 @@
 <?php namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Repositories\ParticipantRepository;
 
-class ParticipantController extends Controller {
+use Log;
+
+class ParticipantController extends BaseController {
 
   private $participantRepo;
 
@@ -14,5 +17,43 @@ class ParticipantController extends Controller {
     return response()->json(
       $this->participantRepo->all()
     );
+  }
+
+  public function create(Request $request) {
+    $participant = $request->json()->all();
+    $newParticipant = $this->participantRepo->create($participant);
+
+    $response = response()->json(
+      $newParticipant->toArray()
+    );
+    /*
+    $response->header('Content-Type', 'application/json');
+    $response->header('charset', 'utf-8');
+    */
+    return $response;
+  }
+
+  public function update(Request $request, $id) {
+    $affectRow = $this->participantRepo->update($request->json()->all(), $id);
+
+    if ($affectRow == 1) {
+      return response()->json(
+        $this->participantRepo->findById($id)->toArray()
+      );
+    }
+
+    return response('Something wrong', 400);
+  }
+
+  public function delete($id) {
+    $participant = $this->participantRepo->findById($id);
+
+    if (! $participant) {
+      return $this->response->errorNotFound();
+    }
+
+    $this->participantRepo->delete($id);
+
+    return $this->response->noContent();
   }
 }

@@ -42,11 +42,11 @@ abstract class Repository implements RepositoryInterface {
     return $this->model->where($attribute, '=', $value)->first($columns);
   }
 
-  public function update(array $data, $id) {
-
+  public function update(array $data, $id, $attribute="id") {
+    return $this->model->where($attribute, '=', $id)->update($data);
   }
 
   public function delete($id) {
-
+    return $this->model->delete($id);
   }
 }
