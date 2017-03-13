@@ -26,14 +26,17 @@ class ParticipantController extends BaseController {
     $response = response()->json(
       $newParticipant->toArray()
     );
-    /*
-    $response->header('Content-Type', 'application/json');
-    $response->header('charset', 'utf-8');
-    */
+
     return $response;
   }
 
   public function update(Request $request, $id) {
+    $participant = $this->participantRepo->findById($id);
+
+    if (!$participant) {
+      return $this->response->errorNotFound();
+    }
+
     $affectRow = $this->participantRepo->update($request->json()->all(), $id);
 
     if ($affectRow == 1) {
@@ -42,7 +45,7 @@ class ParticipantController extends BaseController {
       );
     }
 
-    return response('Something wrong', 400);
+    return $this->response->error('Something wrong', 400);
   }
 
   public function delete($id) {
